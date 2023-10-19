@@ -19,7 +19,7 @@ stackoverflow_username: "stackoverflow.com/users/12016688/amir-reza-riahi"
 #########################################################################################
 ######### Nothing below needs to be changed (unless you know what you're doing) #########
 #########################################################################################
-theme: "jekyll-lightspeed"
+theme: "Midnight"
 
 rss: rss
 

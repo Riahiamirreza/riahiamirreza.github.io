@@ -1,13 +1,14 @@
-title: "My Blogs Name"
-author: "Default Author Name"
+title: "Favorit agnostic"
+author: "Amirreza Riahi"
 description: "Some short description of your blog can go here." # This will show up in places like twitter, linkedin, etc, if you share your sites url as a post.
 
 # Email / Social media user names used by the minima theme:
 # All of these are optional and can be removed or commented out
-email: "example@mail.com"
-twitter_username: "twitteruser"
-github_username: "githubuser"
-linkedin_username: "linkedinuser"
+email: "riahiamirreza79@gmail.com"
+# twitter_username: "twitteruser"
+github_username: "github.com/Riahiamirreza"
+linkedin_username: "linkedin.com/in/amirreza-riahi"
+stackoverflow: "stackoverflow.com/users/12016688/amir-reza-riahi"
 #facebook_username: username
 #flickr_username: username
 #instagram_username: username

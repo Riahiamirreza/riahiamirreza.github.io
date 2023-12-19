@@ -38,7 +38,7 @@ This is assembly generated for `foo`:
   401143:	c9                   	leaveq 
   401144:	c3                   	retq   
 ```
-At this point `sub    $0x10,%rsp` the compiler is allocating stack memory for local variable `x`. You may have noticed that it is allocating more than what is seemingly needed, `int x` in most architectures (including my computer) has size of 4 bytes, but by subtracting `rsp` 16 bytes, we are allocating more memory than just what is needed for `x`. You can look at [this question](https://stackoverflow.com/questions/34170306/gcc-reserving-more-space-than-needed-for-local-variables) for the understanding why it is the case. But for now, we can assume that first 4 bytes of the allocated space is for `x` (You can figure out using `gdb`). So if we write at that address, that will hopefully be the value of `x`.
+At this point `sub    $0x10,%rsp` the compiler is allocating stack memory for local variable `x`. You may have noticed that it is allocating more than what is seemingly needed, `int x` in most architectures (including my computer) has size of 4 bytes, but by subtracting `rsp` 16 bytes, we are allocating more memory than just what is needed for `x`. You can look at [this question](https://stackoverflow.com/questions/34170306/gcc-reserving-more-space-than-needed-for-local-variables) to understand why it is the case. But for now, we can assume that first 4 bytes of the allocated space is for `x` (You can figure it out using `gdb`). So if we write at that address, that will hopefully be the value of `x`.
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
         return 0;
 }
 ```
-In this version of code, I try to access the memory of `x` using `argc` memory address. And using `gdb` I figured out in my compiled version of code, (remember this is very dependant on your compiler, optimization level, OS, et cetra) `x` resides 32 bytes below the `argc`. Note that `&argc-8` is actually subtracting 8 times of size of pointer (which is 32 bytes) from `&argc`. And the result is as below:
+In this version of code, I try to access the memory of `x` using `argc` memory address. And using `gdb` I figured out in my compiled version of code, (remember this is very dependant on your compiler, optimization level, OS, et cetra) `x` resides 32 bytes below the `argc`. Note that `&argc-8` is actually subtracting 8 times of size of integer (which is 4 bytes) from `&argc`. And the result is as below:
 ```bash
 {amirreza@localhost modification}
  > ./a.out 2
@@ -74,7 +74,7 @@ Note that we are abusing an undefined-behavior. This code is not guaranteed to w
  > ./a.out 15
 0
 ```
-It's due to the fact that the compiler is free to on how to manage the memory, and may choose to put `x` somewhere else. Futhermore this behaiour can (and in my case will) change by changing the compiler. This is the result of code when I used `clang` instead of `gcc`:
+It's due to the fact that the compiler is free on how to manage the memory, and may choose to put `x` somewhere else. Futhermore this behaiour can (and in my case will) change by changing the compiler. This is the result of code when I use `clang` instead of `gcc`:
 
 ```bash
 {amirreza@localhost modification}

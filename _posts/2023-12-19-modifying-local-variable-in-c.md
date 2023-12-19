@@ -63,8 +63,33 @@ In this version of code, I try to access the memory of `x` using `argc` memory a
  > ./a.out 24
 24
 ```
-Note that we are abusing an undefined-behavior. This code is not guaranteed to work. The compiler can choose to clear all stack allocated memory addresses once they are allocated. 
+Note that we are abusing an undefined-behavior. This code is not guaranteed to work. The compiler can choose to clear all stack allocated memory addresses once they are allocated. When I try to compile it with `-O3` the result is not as I expected before:
+```Bash
+{amirreza@localhost modification}
+ > gcc useless.c -O3
+{amirreza@localhost modification}
+ > ./a.out 12
+0
+{amirreza@localhost modification}
+ > ./a.out 15
+0
+```
+It's due to the fact that the compiler is free to on how to manage the memory, and may choose to put `x` somewhere else. Futhermore this behaiour can (and in my case will) change by changing the compiler. This is the result of code when I used `clang` instead of `gcc`:
 
+```bash
+{amirreza@localhost modification}
+ > clang useless.c 
+{amirreza@localhost modification}
+ > ./a.out 1
+32610
+{amirreza@localhost modification}
+ > ./a.out 14
+32731
+
+```
+As you can see, by no means we can rely on this type of abusing memory.
+
+My `gcc` version:
 ```bash
 
  > gcc --version

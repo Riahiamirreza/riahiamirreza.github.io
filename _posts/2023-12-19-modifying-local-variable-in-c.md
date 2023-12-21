@@ -21,7 +21,7 @@ Of course using value of an uninitialized variable is undefined-behavior, but le
 {amirreza@localhost modification}
  > gcc useless.c
 {amirreza@localhost modification}
- > objdump -S a.out ...
+ > objdump -S a.out
 ```
 This is assembly generated for `foo`:
 ```
@@ -38,7 +38,7 @@ This is assembly generated for `foo`:
   401143:	c9                   	leaveq 
   401144:	c3                   	retq   
 ```
-At this point `sub    $0x10,%rsp` the compiler is allocating stack memory for local variable `x`. You may have noticed that it is allocating more than what is seemingly needed, `int x` in most architectures (including my computer) has size of 4 bytes, but by subtracting `rsp` 16 bytes, we are allocating more memory than just what is needed for `x`. You can look at [this question](https://stackoverflow.com/questions/34170306/gcc-reserving-more-space-than-needed-for-local-variables) to understand why it is the case. But for now, we can assume that first 4 bytes of the allocated space is for `x` (We will figure it out using `gdb`). So if we write at that address, that will hopefully change the value of `x`.
+At this point `sub    $0x10,%rsp` the compiler is allocating stack memory for local variable `x`. You may have noticed that it is allocating more than what is seemingly needed, `int x` in most architectures (including my computer) has size of 4 bytes, but by subtracting `rsp` 16 bytes, we are allocating more memory than just what is needed for `x`. You can look at [this question](https://stackoverflow.com/questions/34170306/gcc-reserving-more-space-than-needed-for-local-variables) to understand why it is the case. But for now, we can assume `x` will be placed somewhere in that allocated chunk (We will figure out the exact address using `gdb`). So if we write at that address, that will hopefully change the value of `x`.
 I investigated address of stack variables using `gdb` to find where will `x` reside. More accurately I tried to find the relative distance of two variables, `argc` and `x`.
 ```bash
 {amirreza@localhost modification}
@@ -117,7 +117,8 @@ Here `&argc-8` is actually subtracting 8 times of size of integer (which is 4 by
 24
 ```
 
-Note that we are abusing an undefined-behavior. This code is not guaranteed to work. The compiler can choose to clear all stack allocated memory addresses once they are allocated or it can choose to put `x` somewhere else instead of 32 bytes below than `argc`. When I try to compile it with `-O3` the result is not as I expected before:
+Note that we are abusing an undefined-behavior. This code is not guaranteed to work. The compiler can choose to clear all stack allocated memory addresses once they are allocated or it can choose to put `x` somewhere else instead of 32 bytes belower than `argc`. In other words, this code is completely relied on the implementation details of the compiler, not specification of the language. 
+When I try to compile it with `-O3` the result is not as I expected before:
 ```Bash
 {amirreza@localhost modification}
  > gcc useless.c -O3
@@ -151,4 +152,5 @@ gcc (GCC) 10.3.1 20210422 (Red Hat 10.3.1-1)
 Copyright (C) 2020 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
 ```
